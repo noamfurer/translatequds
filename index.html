@@ -19,7 +19,11 @@
 
     async function fetchAndTranslateRSS() {
       try {
-        const response = await axios.get(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
+        const response = await axios.get(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+          }
+        });
         const items = response.data.items;
 
         const feedContainer = document.getElementById('rss-feed');
@@ -34,6 +38,7 @@
 
           const titleElement = document.createElement('a');
           titleElement.href = link;
+          titleElement.target = '_blank'; // Open link in new tab/window
           titleElement.classList.add('text-blue-600', 'hover:text-blue-800', 'font-bold', 'text-lg', 'mb-2');
           titleElement.textContent = title;
 
@@ -56,7 +61,7 @@
             q: text
           }
         });
-        return response.data[0][0][0];
+        return response.data[0].map(([translation]) => translation).join('');
       } catch (error) {
         console.error('Error translating text:', error);
         return text;
