@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSS Translator</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/he/he.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="container mx-auto my-8 px-4">
+    <h1 class="text-3xl font-bold mb-4">RSS Translator</h1>
+    <div id="rss-feed" class="space-y-4"></div>
+  </div>
+
+  <script>
+    const rssUrl = 'https://ch2rss.fflow.net/QudsN';
+
+    async function fetchAndTranslateRSS() {
+      try {
+        const response = await axios.get(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
+        const items = response.data.items;
+
+        const feedContainer = document.getElementById('rss-feed');
+        feedContainer.innerHTML = '';
+
+        items.forEach(item => {
+          const title = he.decode(item.title);
+          const link = item.link;
+
+          const feedItem = document.createElement('div');
+          feedItem.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'p-4');
+
+          const titleElement = document.createElement('a');
+          titleElement.href = link;
+          titleElement.classList.add('text-blue-600', 'hover:text-blue-800', 'font-bold', 'text-lg', 'mb-2');
+          titleElement.textContent = title;
+
+          feedItem.appendChild(titleElement);
+          feedContainer.appendChild(feedItem);
+        });
+      } catch (error) {
+        console.error('Error fetching or translating RSS:', error);
+      }
+    }
+
+    fetchAndTranslateRSS();
+  </script>
+</body>
+</html>
